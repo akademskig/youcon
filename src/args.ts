@@ -1,10 +1,10 @@
 import yargs from "yargs"
-import { pathToFileURL } from "url";
-import path from "path"
+
 export default class Args {
     private _urls!: Array<string | number>
     private _dir!: string
     private _convert!: boolean
+    private _format!: string
 
     constructor() {
         this.parseArgs()
@@ -19,7 +19,7 @@ export default class Args {
             })
             .option('dir', {
                 alias: "d",
-                default: "./videos",
+                default: `/home/${require("os").userInfo().username}/videos`,
                 describe: "destination directory",
                 string: true
             })
@@ -29,12 +29,19 @@ export default class Args {
                 describe: "convert to mp3",
                 boolean: true
             })
+            .option('format', {
+                alias: "f",
+                default: "mp3",
+                describe: "format to convert into",
+                string: true
+            })
             .help('help')
             .argv
 
         this._urls = args.url
         this._dir = args.dir
         this._convert = args.convert
+        this._format = args.format
     }
 
     get urls() {
@@ -47,5 +54,9 @@ export default class Args {
 
     get convert() {
         return this._convert
+    }
+
+    get format(){
+        return this._format
     }
 }

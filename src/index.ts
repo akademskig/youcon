@@ -18,12 +18,12 @@ export default class Youtomp3 {
                 clearInterval(interval)
             }
             else {
-                process.stdout.write("#")
+                process.stdout.write(" .")
             }
-        }, 300)
+        }, 200)
     }
     async init() {
-        console.log(`Downloading ${this.args.urls.length} videos to directory ${this.args.dir}`)
+        process.stdout.write(`Downloading ${this.args.urls.length} videos to directory ${this.args.dir}`)
         this.loader()
         for (let url of this.args.urls)
             await this.downloadVideos(url.toString(), this.args.dir)
@@ -45,8 +45,10 @@ export default class Youtomp3 {
         return new Promise((resolve, reject) => {
             if (!fs.existsSync(dir))
                 return fs.mkdir(dir, (err) => {
-                    if (err)
+                    if (err) {
                         reject(err)
+                        return
+                    }
                     resolve()
                 })
             else
@@ -55,32 +57,70 @@ export default class Youtomp3 {
 
     }
 
-    async converToMp3(file: string, dir: string) {
-
+    async convert(file: string, dir: string) {
         const fileArr = file.split(".")
         let ext = fileArr.pop() || "mp4"
 
         const filename = fileArr.join(".")
-        console.log(`Converting ${file} to ${filename}.mp3`)
-        this.loader()
+        console.log(`\nConverting ${file} to ${filename}.${this.args.format}`)
         return new Promise((resolve, reject) => {
             const { exec } = require('child_process');
-            exec(`ffmpeg -y -i "${dir}/${filename.concat(".", ext)}"  "${dir}/${filename}.mp3"`, (err: Error, stdout: any, stderr: any) => {
-                if (err) {
-                    console.error(err)
-                    reject(err)
-                    return;
-                }
-                this.load = false
+            let end = 0
+            let start = 0
+            const converter = exec(`ffmpeg -y -i "${dir}/${filename.concat(".", ext)}"  "${dir}/${filename}.${this.args.format}"`)
+            converter.stderr.on("end", (c: any) => {
+                //@ts-ignore
+                process.stdout.cursorTo(0);
+                //@ts-ignore
+                process.stdout.clearLine(1);
+                process.stdout.write('100% - DONE\n');
                 resolve()
-            });
+            })
+            let duration = 0
+            converter.stderr.on("start", (data: string) => console.log("start", data))
+            converter.stderr.on("data", (data: any) => {
+                const durationIndex = data.search("Duration")
+                if (durationIndex !== -1) {
+                    start = Date.now()
+
+                    let durArr = data.substring(durationIndex, durationIndex + 18).split(" ")[1].trim().split(":")
+                    durArr.forEach((d: string, i: number) => {
+                        switch (i) {
+                            case (0): duration += parseInt(d) * 3600 * 1000
+                                break;
+                            case (1): duration += parseInt(d) * 1000
+                                break;
+                            case (2): duration += parseInt(d)
+
+                        }
+                    })
+                    end = (start + duration)
+                }
+                if (end) {
+                    const percentage = (((Date.now() - start) / duration) * 100).toFixed(2)
+                    if ((Date.now() - start) / duration <= 1) {
+                        //@ts-ignore
+                        process.stdout.cursorTo(0);
+                        //@ts-ignore
+                        process.stdout.clearLine(1);
+                        process.stdout.write(percentage + "%");
+                    }
+                }
+            })
         })
 
     }
     async downloadVideos(url: string, dir: string) {
         return new Promise(async (resolve, reject) => {
             let video: youtubedl.Youtubedl
-            let videoInfo = await this.getVideoInfo(url)
+            let videoInfo
+            try {
+                videoInfo = await this.getVideoInfo(url)
+            }
+            catch (err) {
+                reject(err)
+                return
+            }
             let filename = videoInfo._filename
             let position = 0;
             let videoSize: number
@@ -88,7 +128,7 @@ export default class Youtomp3 {
                 throw new Error(`Unable to get video info from url ${url}`)
             }
             await this.checkDir(dir)
-            this.load = true
+            this.load = false
             video = youtubedl(url,
                 ['--format=18'],
                 { cwd: dir });
@@ -107,13 +147,16 @@ export default class Youtomp3 {
                     process.stdout.cursorTo(0);
                     //@ts-ignore
                     process.stdout.clearLine(1);
-                    process.stdout.write(percent + '%');
+                    if (percent !== "100.00")
+                        process.stdout.write(percent + '%');
+                    else {
+                        process.stdout.write(percent + '% - DONE');
+                    }
                 }
             });
             video.on('end', async () => {
-                console.log(`\nVideo ${filename} - done`)
                 if (this.args.convert)
-                    await this.converToMp3(filename, dir).catch(err => reject(err))
+                    await this.convert(filename, dir).catch(err => reject(err))
                 resolve()
             })
 
@@ -124,7 +167,8 @@ export default class Youtomp3 {
 
 export function init() {
     new Youtomp3().init().catch(err => {
-        console.error(err)
+        console.error("ERROR", err)
         process.exit(1)
     })
 }
+init()
