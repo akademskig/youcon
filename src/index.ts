@@ -3,6 +3,7 @@ import fs from "fs"
 import path from "path"
 import Args from "./args";
 import humanize from "humanize"
+import { getDuration, checkDir } from "./utils"
 export default class Youtomp3 {
 
     args: Args
@@ -30,6 +31,8 @@ export default class Youtomp3 {
     }
 
     async getVideoInfo(url: string): Promise<youtubedl.Info> {
+        if (!url.match("/watch?"))
+            throw new Error("Invalid video url")
         return new Promise((res, rej) => {
             return youtubedl.getInfo(url, (err, info) => {
                 if (err)
@@ -41,70 +44,46 @@ export default class Youtomp3 {
         })
     }
 
-    async checkDir(dir: string) {
-        return new Promise((resolve, reject) => {
-            if (!fs.existsSync(dir))
-                return fs.mkdir(dir, (err) => {
-                    if (err) {
-                        reject(err)
-                        return
-                    }
-                    resolve()
-                })
-            else
-                resolve()
-        })
-
-    }
-
     async convert(file: string, dir: string) {
         const fileArr = file.split(".")
         let ext = fileArr.pop() || "mp4"
 
         const filename = fileArr.join(".")
         console.log(`\nConverting ${file} to ${filename}.${this.args.format}`)
+        await checkDir(`${dir}/${this.args.format}`)
         return new Promise((resolve, reject) => {
             const { exec } = require('child_process');
-            let end = 0
-            let start = 0
-            const converter = exec(`ffmpeg -y -i "${dir}/${filename.concat(".", ext)}"  "${dir}/${filename}.${this.args.format}"`)
+            const converter = exec(`ffmpeg -y -i "${dir}/${filename.concat(".", ext)}"  "${dir}/${this.args.format}/${filename}.${this.args.format}"`)
             converter.stderr.on("end", (c: any) => {
                 //@ts-ignore
                 process.stdout.cursorTo(0);
                 //@ts-ignore
                 process.stdout.clearLine(1);
-                process.stdout.write('100% - DONE\n');
+                process.stdout.write('100.00% - DONE\n');
                 resolve()
             })
+
             let duration = 0
-            converter.stderr.on("start", (data: string) => console.log("start", data))
             converter.stderr.on("data", (data: any) => {
                 const durationIndex = data.search("Duration")
+
                 if (durationIndex !== -1) {
-                    start = Date.now()
-
-                    let durArr = data.substring(durationIndex, durationIndex + 18).split(" ")[1].trim().split(":")
-                    durArr.forEach((d: string, i: number) => {
-                        switch (i) {
-                            case (0): duration += parseInt(d) * 3600 * 1000
-                                break;
-                            case (1): duration += parseInt(d) * 1000
-                                break;
-                            case (2): duration += parseInt(d)
-
-                        }
-                    })
-                    end = (start + duration)
+                    // find the duration substring in ffmpeg output
+                    let durData = data.substring(durationIndex, durationIndex + 18).split(" ")[1].trim()
+                    duration = getDuration(durData)
                 }
-                if (end) {
-                    const percentage = (((Date.now() - start) / duration) * 100).toFixed(2)
-                    if ((Date.now() - start) / duration <= 1) {
-                        //@ts-ignore
-                        process.stdout.cursorTo(0);
-                        //@ts-ignore
-                        process.stdout.clearLine(1);
-                        process.stdout.write(percentage + "%");
-                    }
+                else {
+                    const timeIndex = data.search("time=")
+                    if (timeIndex === -1)
+                        return
+                    const timeData = data.substring(timeIndex, timeIndex + 13).split("=")[1].trim()
+                    const time = getDuration(timeData)
+                    const percentage = ((time / duration) * 100).toFixed(2)
+                    //@ts-ignore
+                    process.stdout.cursorTo(0);
+                    //@ts-ignore
+                    process.stdout.clearLine(1);
+                    process.stdout.write(percentage + "%");
                 }
             })
         })
@@ -127,7 +106,7 @@ export default class Youtomp3 {
             if (!videoInfo) {
                 throw new Error(`Unable to get video info from url ${url}`)
             }
-            await this.checkDir(dir)
+            await checkDir(dir)
             this.load = false
             video = youtubedl(url,
                 ['--format=18'],
@@ -147,14 +126,13 @@ export default class Youtomp3 {
                     process.stdout.cursorTo(0);
                     //@ts-ignore
                     process.stdout.clearLine(1);
-                    if (percent !== "100.00")
-                        process.stdout.write(percent + '%');
-                    else {
-                        process.stdout.write(percent + '% - DONE');
-                    }
+                    process.stdout.write(percent + '%');
+
                 }
             });
             video.on('end', async () => {
+                process.stdout.write(' - DONE\n');
+
                 if (this.args.convert)
                     await this.convert(filename, dir).catch(err => reject(err))
                 resolve()
