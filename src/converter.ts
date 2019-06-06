@@ -1,5 +1,5 @@
 import Utils from "./utils";
-
+import { exec } from "child_process"
 export default class Converter {
     private _utils: Utils
     constructor(utils: Utils) {
@@ -18,14 +18,17 @@ export default class Converter {
         console.log(`\nConverting ${file} to ${filename}.${format}`)
         await this._utils.checkDir(`${dir}/${format}`)
         return new Promise((resolve) => {
-            const { exec } = require('child_process');
             let duration = 0
 
             const converter = exec(`ffmpeg -y -i "${dir}/${filename.concat(".", ext)}"  "${dir}/${format}/${filename}.${format}"`,
-                (err: Error) => {
-                    if (err)
+                (err: any) => {
+                    if (err) {
                         console.error(err)
+                    }
                 })
+            if (!converter.stderr) {
+                throw new Error("Invalid commmand.")
+            }
             converter.stderr.on("end", () => {
                 resolve()
             })
@@ -55,6 +58,5 @@ export default class Converter {
                 }
             })
         })
-
     }
 }

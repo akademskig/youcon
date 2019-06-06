@@ -7,7 +7,8 @@ export default class Youtomp3 {
     private _args: Args
     private _downloader: Downloader
 
-    constructor(args: Args, downloader: Downloader) {
+    constructor() {
+        const { args, downloader } = new Instances()
         this._args = args
         this._downloader = downloader
     }
@@ -29,9 +30,8 @@ export default class Youtomp3 {
     }
 }
 
-export function init() {
-    const { args, downloader } = new Instances()
-    new Youtomp3(args, downloader).init().catch(err => {
+export function init(urls?: Array<string>, dir?: string, convert?: boolean, format?: string) {
+    new Youtomp3().init(urls, dir, convert, format).catch(err => {
         console.error("ERROR", err)
         process.exit(1)
     })
