@@ -11,7 +11,9 @@
     "test": "jest",
     "start": "node ./dist",
     "build": "tsc",
-    "watch": "tsnd --respawn ./src/"
+    "watch": "tsnd --respawn ./src/",
+    "prepare" : "npm run build",
+    "prepublishOnly" : "npm test"
   },
   "keywords": [],
   "author": "",
