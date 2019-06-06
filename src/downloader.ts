@@ -15,7 +15,12 @@ export default class Downloader {
         this._args = args
         this._converter = converter
     }
+    /**
+     * @param  {string} url - video url
+     *  - Get video information from youtube
+     */
     async getVideoInfo(url: string): Promise<youtubedl.Info> {
+        // check if url is a video url
         if (!url.match("/watch?"))
             throw new Error("Invalid video url")
         return new Promise((res, rej) => {
@@ -29,7 +34,10 @@ export default class Downloader {
         })
     }
 
-
+    /**
+     * @param  {string} url - video url
+     * @param  {string} dir - destination directory
+     */
     async downloadVideos(url: string, dir: string) {
         this._utils.loader(true)
 
@@ -70,7 +78,6 @@ export default class Downloader {
                     //@ts-ignore
                     process.stdout.clearLine(1);
                     process.stdout.write(percent + '%');
-
                 }
             });
             video.on('end', async () => {

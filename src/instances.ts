@@ -8,6 +8,7 @@ export default class Instances {
     _utils: Utils
     _downloader!: Downloader
     _converter!: Converter
+
     constructor() {
         this._args = new Args()
         this._utils = new Utils()

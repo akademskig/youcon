@@ -5,6 +5,11 @@ export default class Converter {
     constructor(utils: Utils) {
         this._utils = utils
     }
+    /**
+     * @param  {string} file - filename to convert
+     * @param  {string} dir - destination directory
+     * @param  {string} format - format to convert into
+     */
     async convert(file: string, dir: string, format: string) {
         const fileArr = file.split(".")
         let ext = fileArr.pop() || "mp4"
@@ -14,6 +19,8 @@ export default class Converter {
         await this._utils.checkDir(`${dir}/${format}`)
         return new Promise((resolve) => {
             const { exec } = require('child_process');
+            let duration = 0
+
             const converter = exec(`ffmpeg -y -i "${dir}/${filename.concat(".", ext)}"  "${dir}/${format}/${filename}.${format}"`,
                 (err: Error) => {
                     if (err)
@@ -23,7 +30,6 @@ export default class Converter {
                 resolve()
             })
 
-            let duration = 0
             converter.stderr.on("data", (data: any) => {
                 const durationIndex = data.search("Duration")
 

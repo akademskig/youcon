@@ -42,7 +42,9 @@ export default class Utils {
                 resolve()
         })
     }
-
+    /**
+     * @param  {boolean} run - start of stop loader
+     */
     loader(run: boolean) {
         if (this._interval && !run) {
             clearInterval(this._interval)
