@@ -2,7 +2,7 @@
 import Args from "./args";
 import Downloader from "./downloader";
 import Instances from "./instances";
-export default class Youtomp3 {
+export default class Youcon {
 
     private _args: Args
     private _downloader: Downloader
@@ -31,7 +31,7 @@ export default class Youtomp3 {
 }
 
 export function init(urls?: Array<string>, dir?: string, convert?: boolean, format?: string) {
-    new Youtomp3().init(urls, dir, convert, format).catch(err => {
+    new Youcon().init(urls, dir, convert, format).catch(err => {
         console.error("ERROR", err)
         process.exit(1)
     })
