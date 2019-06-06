@@ -12,8 +12,8 @@
     "start": "node ./dist",
     "build": "tsc",
     "watch": "tsnd --respawn ./src/",
-    "prepare" : "npm run build",
-    "prepublishOnly" : "npm test"
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test"
   },
   "keywords": [],
   "author": "",
