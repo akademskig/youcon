@@ -11,7 +11,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./dist",
     "build": "tsc",
-    "watch": "tsnd --respawn ./src/index.ts"
+    "watch": "tsnd --respawn ./src/"
   },
   "keywords": [],
   "author": "",
