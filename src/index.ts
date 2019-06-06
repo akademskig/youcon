@@ -54,13 +54,12 @@ export default class Youtomp3 {
         await checkDir(`${dir}/${this.args.format}`)
         return new Promise((resolve, reject) => {
             const { exec } = require('child_process');
-            const converter = exec(`ffmpeg -y -i "${dir}/${filename.concat(".", ext)}"  "${dir}/${this.args.format}/${filename}.${this.args.format}"`)
+            const converter = exec(`ffmpeg -y -i "${dir}/${filename.concat(".", ext)}"  "${dir}/${this.args.format}/${filename}.${this.args.format}"`,
+                (err: Error) => {
+                    if (err)
+                        console.error(err)
+                })
             converter.stderr.on("end", (c: any) => {
-                //@ts-ignore
-                process.stdout.cursorTo(0);
-                //@ts-ignore
-                process.stdout.clearLine(1);
-                process.stdout.write('100.00% - DONE\n');
                 resolve()
             })
 
@@ -85,6 +84,8 @@ export default class Youtomp3 {
                     //@ts-ignore
                     process.stdout.clearLine(1);
                     process.stdout.write(percentage + "%");
+                    if (percentage == "100.00")
+                        process.stdout.write(" - DONE\n");
                 }
             })
         })
