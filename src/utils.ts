@@ -28,7 +28,7 @@ export default class Utils {
     /**
      * @param  {string} dir directory path
      */
-    async  checkDir(dir: string) {
+    async checkDir(dir: string) {
         return new Promise((resolve, reject) => {
             if (!fs.existsSync(dir))
                 return fs.mkdir(dir, (err) => {
