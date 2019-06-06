@@ -1,10 +1,10 @@
 {
-  "name": "youtomp3",
+  "name": "youcon",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "bin": {
-    "youtomp3": "./bin/exec.js"
+    "youcon": "./bin/exec.js"
   },
   "preferGlobal": true,
   "scripts": {
