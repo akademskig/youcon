@@ -23,7 +23,8 @@ export default class Youtomp3 {
             }
         }, 200)
     }
-    async init() {
+    async init(urls?: Array<string>, dir?: string, convert?: boolean, format?: string) {
+        this.args.setArgs(urls, dir, convert, format)
         process.stdout.write(`Downloading ${this.args.urls.length} videos to directory ${this.args.dir}`)
         this.loader()
         for (let url of this.args.urls)
@@ -149,4 +150,4 @@ export function init() {
         process.exit(1)
     })
 }
-init()
+// init()

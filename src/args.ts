@@ -7,15 +7,14 @@ export default class Args {
     private _format!: string
 
     constructor() {
-        this.parseArgs()
+        this.parseCliArgs()
     }
-    parseArgs() {
+    parseCliArgs() {
         const args = yargs
             .option('url', {
                 alias: "u",
                 describe: "video url to download",
                 array: true,
-                demand: true
             })
             .option('dir', {
                 alias: "d",
@@ -37,11 +36,24 @@ export default class Args {
             })
             .help('help')
             .argv
-
-        this._urls = args.url
+        if (args.url)
+            this._urls = args.url
         this._dir = args.dir
         this._convert = args.convert
         this._format = args.format
+    }
+
+    setArgs(urls?: Array<string>, dir?: string, convert?: boolean, format?: string) {
+        if (urls)
+            this._urls = urls
+        if (dir)
+            this._dir = dir
+        if (convert)
+            this._convert = convert
+        if (format)
+            this._format = format
+        if (!this._urls || this._urls.length === 0)
+            throw new Error("Url argument is required!")
     }
 
     get urls() {
@@ -56,7 +68,7 @@ export default class Args {
         return this._convert
     }
 
-    get format(){
+    get format() {
         return this._format
     }
 }
