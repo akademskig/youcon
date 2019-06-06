@@ -1,5 +1,6 @@
 import Utils from "./utils";
 import { exec } from "child_process"
+import ProcessExec from "../types/process";
 export default class Converter {
     private _utils: Utils
     constructor(utils: Utils) {
@@ -24,6 +25,7 @@ export default class Converter {
                 (err: any) => {
                     if (err) {
                         console.error(err)
+                        throw err
                     }
                 })
             if (!converter.stderr) {
@@ -42,17 +44,18 @@ export default class Converter {
                     duration = this._utils.getDuration(durData)
                 }
                 else {
+                    let processE: ProcessExec = process
                     const timeIndex = data.search("time=")
                     if (timeIndex === -1)
                         return
                     const timeData = data.substring(timeIndex, timeIndex + 13).split("=")[1].trim()
                     const time = this._utils.getDuration(timeData)
                     const percentage = ((time / duration) * 100).toFixed(2)
-                    //@ts-ignore
-                    process.stdout.cursorTo(0);
-                    //@ts-ignore
-                    process.stdout.clearLine(1);
-                    process.stdout.write(percentage + "%");
+                    if (processE.stdout.cursorTo && processE.stdout.clearLine) {
+                        processE.stdout.cursorTo(0);
+                        processE.stdout.clearLine(1);
+                        processE.stdout.write(percentage + "%");
+                    }
                     if (percentage == "100.00")
                         process.stdout.write(" - DONE\n");
                 }
