@@ -1,5 +1,5 @@
 import Utils from "./utils";
-import { exec } from "child_process"
+import { exec, ExecException } from "child_process"
 import ProcessExec from "../types/process";
 export default class Converter {
     private _utils: Utils
@@ -22,9 +22,11 @@ export default class Converter {
             let duration = 0
 
             const converter = exec(`ffmpeg -y -i "${dir}/${filename.concat(".", ext)}"  "${dir}/${format}/${filename}.${format}"`,
-                (err: any) => {
+                (err: ExecException | null) => {
                     if (err) {
-                        console.error(err)
+                        if (err.code && err.code===127) {
+                            throw new Error("ffmpeg must be installed!")
+                        }
                         throw err
                     }
                 })
