@@ -8,7 +8,6 @@ describe("Converter class", () => {
     let filename = "test_file.mp4"
     test('Convert a file to .mp3', async () => {
         await instances.converter.convert(filename, "./test_files", "mp3")
-        console.log("something")
         const file = filename.split(".")
         file.pop()
         const mp3File = file.join(".") + ".mp3"
