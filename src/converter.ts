@@ -1,8 +1,9 @@
 import Utils from "./utils";
+import fs from "fs"
+import path from "path"
 import { exec } from "child_process"
 import ProcessExec from "../types/process";
 import { ExecFileError } from "../types/execFileError";
-import ffPathJ from "./ffmpeg-downloader/ffpath.json"
 export default class Converter {
     private _utils: Utils
     constructor(utils: Utils) {
@@ -16,7 +17,7 @@ export default class Converter {
     async convert(file: string, dir: string, format: string) {
         const fileArr = file.split(".")
         let ext = fileArr.pop() || "mp4"
-        const ffPath = ffPathJ.ffPath
+        const ffPath = JSON.parse(fs.readFileSync(path.join(__dirname, "./ffmpeg-downloader/ffpath.json")).toString()).ffPath
         const filename = fileArr.join(".")
         console.log(`\nConverting ${file} to ${filename}.${format}`)
         await this._utils.checkDir(`${dir}/${format}`)
