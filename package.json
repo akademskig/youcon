@@ -9,7 +9,7 @@
   },
   "preferGlobal": true,
   "scripts": {
-    "test": "jest",
+    "test": "jest --runInBand",
     "start": "node ./dist",
     "build": "tsc",
     "watch": "tsnd --respawn ./src/",
