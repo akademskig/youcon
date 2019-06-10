@@ -18,22 +18,24 @@ describe("End to end", () => {
         expect(e).toBe(true)
     });
 
-    describe("Convert videos", () => {
-        test('Convert video to .mp3', async () => {
+    describe("Convert files", () => {
+        test('Convert a file to .mp3', async () => {
+            await instances.converter.convert(filename, "./test_files", "mp3")
             const file = filename.split(".")
             file.pop()
             const mp3File = file.join(".") + ".mp3"
-            await new Youcon().init([VIDEO_URL], "./test_files", true)
             const e = fs.existsSync(`./test_files/mp3/${mp3File}`)
             expect(e).toBe(true)
-        });
-        test('Convert video to .avi', async () => {
+        })
+    })
+    describe("Convert files", () => {
+        test('Convert a file to .avi', async () => {
+            await instances.converter.convert(filename, "./test_files", "avi")
             const file = filename.split(".")
             file.pop()
-            const aviFile = file.join(".") + ".avi"
-            await new Youcon().init([VIDEO_URL], "./test_files", true, "avi")
-            const e = fs.existsSync(`./test_files/avi/${aviFile}`)
+            const mp3File = file.join(".") + ".avi"
+            const e = fs.existsSync(`./test_files/avi/${mp3File}`)
             expect(e).toBe(true)
-        });
+        })
     })
 })
