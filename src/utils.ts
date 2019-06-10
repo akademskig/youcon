@@ -12,7 +12,6 @@ export default class Utils {
     getDuration(data: string): number {
         let dataArr = data.split(":")
         let duration = 0
-
         if (dataArr.length !== 3)
             throw new Error("Invalid time format")
         dataArr.forEach((d: string, i: number) => {
@@ -22,7 +21,6 @@ export default class Utils {
                 case (1): duration += parseInt(d) * 60 * 1000
                     break;
                 case (2): duration += parseInt(d) * 1000
-
             }
         })
         return duration
@@ -50,13 +48,6 @@ export default class Utils {
                 process.stdout.write(" .")
             }, 200)
         }
-    }
-
-    set setFfmpegPath(ffPath: string) {
-        this.ffPath = ffPath
-    }
-    get getFfmpegPath() {
-        return this.ffPath
     }
 
     getPlatform(): string | null {
