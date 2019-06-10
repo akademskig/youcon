@@ -26,20 +26,20 @@ export default class Instances {
 
     get downloader(): Downloader {
         if (!this._downloader) {
-            this._downloader = new Downloader(this._utils, this._args, this.converter)
+            this._downloader = new Downloader(this.utils, this._args, this.converter)
         }
         return this._downloader
     }
 
     get converter(): Converter {
         if (!this._converter) {
-            this._converter = new Converter(this._utils)
+            this._converter = new Converter(this.utils)
         }
         return this._converter
     }
     get updater(): FfmpegDownloader {
         if (!this._updater) {
-            this._updater = new FfmpegDownloader(this._utils)
+            this._updater = new FfmpegDownloader(this.utils)
         }
         return this._updater
     }
