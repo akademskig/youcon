@@ -68,7 +68,7 @@ export default class Downloader {
                 this._utils.loader(false)
                 videoSize = info.size
                 console.log(`\nDownloading ${info._filename}`)
-                console.log('size: ' + humanize.filesize(info.size));
+                console.log(`Size: ${humanize.filesize(info.size)}`);
             });
 
             video.on('data', (chunk: any) => {
