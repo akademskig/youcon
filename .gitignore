@@ -1,3 +1,5 @@
 /node_modules
 /videos
 /dist
+/test_files
+/ffmpeg
