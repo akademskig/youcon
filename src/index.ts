@@ -3,6 +3,7 @@ import Args from "./args";
 import Downloader from "./downloader";
 import Instances from "./instances";
 import FfmpegDownloader from "./ffmpeg-downloader";
+import ffPath from "./ffmpeg-downloader/ffpath.json"
 export default class Youcon {
 
     private _args: Args
@@ -27,7 +28,7 @@ export default class Youcon {
      */
     async init(urls?: Array<string>, dir?: string, convert?: boolean, format?: string, update?: boolean) {
         this._args.setArgs(urls, dir, convert, format, update)
-        if (this._args.update) {
+        if (this._args.update || ffPath.ffPath.length === 0) {
             await this._updater.init()
         }
         if (!Array.isArray(this._args.urls)) {
