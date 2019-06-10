@@ -5,6 +5,7 @@ export default class Args {
     private _dir!: string
     private _convert!: boolean
     private _format!: string
+    private _update!:boolean
 
     constructor() {
         this.parseCliArgs()
@@ -34,6 +35,12 @@ export default class Args {
                 describe: "format to convert into",
                 string: true
             })
+            .option('update-ffmpeg', {
+                alias: "uf",
+                default: false,
+                describe: "update ffmpeg",
+                boolean: true
+            })
             .help('help')
             .argv
         if (args.url)
@@ -41,6 +48,7 @@ export default class Args {
         this._dir = args.dir
         this._convert = args.convert
         this._format = args.format
+        this._update= args["update-ffmpeg"]
     }
 
     setArgs(urls?: Array<string>, dir?: string, convert?: boolean, format?: string) {
@@ -70,5 +78,9 @@ export default class Args {
 
     get format() {
         return this._format
+    }
+
+    get update(){
+        return this._update
     }
 }
