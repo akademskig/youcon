@@ -9,6 +9,7 @@
   },
   "preferGlobal": true,
   "scripts": {
+    "test": "echo \"No test specified\" && exit 0",
     "start": "node ./dist",
     "build": "tsc",
     "watch": "tsnd --respawn ./src/",
