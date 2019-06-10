@@ -62,10 +62,7 @@ export default class FfmpegDownloader {
         const zipPath = this.ffPath + ".zip"
         if (this.utils.getPlatform() === "win")
             this.ffPath += ".exe"
-        fs.writeFile(path.join(__dirname, "./path.json"), Buffer.from(`{ ffPath: ${this.ffPath}`), (err: NodeJS.ErrnoException | null) => {
-            if (err)
-                throw err
-        })
+        fs.writeFileSync(path.join(__dirname, "./ffpath.json"), Buffer.from(`{ "ffPath": "${this.ffPath}","ffVersion":"${this.version}"}`))
 
         return new Promise((resolve, reject) => {
             process.stdout.write(`Downloading ffmpeg v${this.version}`)
