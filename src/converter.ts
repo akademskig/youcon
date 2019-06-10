@@ -1,6 +1,8 @@
 import Utils from "./utils";
-import { exec, ExecException } from "child_process"
+import { execFile } from "child_process"
 import ProcessExec from "../types/process";
+import { ExecFileError } from "../types/execFileError";
+
 export default class Converter {
     private _utils: Utils
     constructor(utils: Utils) {
@@ -20,11 +22,10 @@ export default class Converter {
         await this._utils.checkDir(`${dir}/${format}`)
         return new Promise((resolve) => {
             let duration = 0
-
-            const converter = exec(`ffmpeg -y -i "${dir}/${filename.concat(".", ext)}"  "${dir}/${format}/${filename}.${format}"`,
-                (err: ExecException | null) => {
+            const converter = execFile(`ffmpeg`,[`-y`, `-i`, `${dir}/${filename.concat(".", ext)}`,  `${dir}/${format}/${filename}.${format}`],
+                (err: ExecFileError | null) => {
                     if (err) {
-                        if (err.code && err.code===127) {
+                        if (err.code && err.code==="ENOENT") {
                             throw new Error("ffmpeg must be installed!")
                         }
                         throw err
