@@ -1,5 +1,5 @@
 import Utils from "./utils";
-import { execFile } from "child_process"
+import { exec } from "child_process"
 import ProcessExec from "../types/process";
 import { ExecFileError } from "../types/execFileError";
 
@@ -20,12 +20,14 @@ export default class Converter {
         const filename = fileArr.join(".")
         console.log(`\nConverting ${file} to ${filename}.${format}`)
         await this._utils.checkDir(`${dir}/${format}`)
+        let cmd = this._utils.getPlatform() === "win" ? `${this._utils.getFfmpegPath} /y /i ${dir}/"${filename.concat(".", ext)}" ${dir}/"${format}/${filename}.${format}"` :
+            `${this._utils.getFfmpegPath} -y -i ${dir}/"${filename.concat(".", ext)}" ${dir}/"${format}/${filename}.${format}"`
         return new Promise((resolve) => {
             let duration = 0
-            const converter = execFile(`ffmpeg`,[`-y`, `-i`, `${dir}/${filename.concat(".", ext)}`,  `${dir}/${format}/${filename}.${format}`],
+            const converter = exec(cmd,
                 (err: ExecFileError | null) => {
                     if (err) {
-                        if (err.code && err.code==="ENOENT") {
+                        if (err.code && err.code === "ENOENT") {
                             throw new Error("ffmpeg must be installed!")
                         }
                         throw err
