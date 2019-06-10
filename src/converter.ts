@@ -2,7 +2,7 @@ import Utils from "./utils";
 import { exec } from "child_process"
 import ProcessExec from "../types/process";
 import { ExecFileError } from "../types/execFileError";
-
+import ffPathJ from "./ffmpeg-downloader/ffpath.json"
 export default class Converter {
     private _utils: Utils
     constructor(utils: Utils) {
@@ -16,12 +16,12 @@ export default class Converter {
     async convert(file: string, dir: string, format: string) {
         const fileArr = file.split(".")
         let ext = fileArr.pop() || "mp4"
-
+        const ffPath = ffPathJ.ffPath
         const filename = fileArr.join(".")
         console.log(`\nConverting ${file} to ${filename}.${format}`)
         await this._utils.checkDir(`${dir}/${format}`)
-        let cmd = this._utils.getPlatform() === "win" ? `${this._utils.getFfmpegPath} /y /i ${dir}/"${filename.concat(".", ext)}" ${dir}/"${format}/${filename}.${format}"` :
-            `${this._utils.getFfmpegPath} -y -i ${dir}/"${filename.concat(".", ext)}" ${dir}/"${format}/${filename}.${format}"`
+        let cmd = this._utils.getPlatform() === "win" ? `${ffPath} /y /i ${dir}/"${filename.concat(".", ext)}" ${dir}/"${format}/${filename}.${format}"` :
+            `${ffPath} -y -i ${dir}/"${filename.concat(".", ext)}" ${dir}/"${format}/${filename}.${format}"`
         return new Promise((resolve) => {
             let duration = 0
             const converter = exec(cmd,

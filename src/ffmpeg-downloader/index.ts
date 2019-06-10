@@ -57,14 +57,16 @@ export default class FfmpegDownloader {
 
     async downloadVersion() {
         const ffDir = path.join(__dirname, `../../ffmpeg/${this.platform}/${this.version}`)
+        await this.utils.checkDir(ffDir)
         this.ffPath = path.join(ffDir, "ffmpeg")
-
         const zipPath = this.ffPath + ".zip"
         if (this.utils.getPlatform() === "win")
             this.ffPath += ".exe"
-        this.utils.setFfmpegPath = this.ffPath
+        fs.writeFile(path.join(__dirname, "./path.json"), Buffer.from(`{ ffPath: ${this.ffPath}`), (err: NodeJS.ErrnoException | null) => {
+            if (err)
+                throw err
+        })
 
-        await this.utils.checkDir(ffDir)
         return new Promise((resolve, reject) => {
             process.stdout.write(`Downloading ffmpeg v${this.version}`)
             this.utils.loader(true)
