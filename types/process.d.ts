@@ -1,4 +1,3 @@
-import { Readable } from "stream";
 
 export default interface ProcessExec extends NodeJS.Process {
     stdout: StdOutExec
