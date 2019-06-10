@@ -1,7 +1,7 @@
 import fs from "fs"
 import Instances from "../src/instances";
 import path from "path"
-jest.setTimeout(60000)
+jest.setTimeout(100000)
 
 
 describe("Converter class", () => {
@@ -11,7 +11,7 @@ describe("Converter class", () => {
     describe("Download ffmpeg", () => {
         test('Download ffmpeg', async () => {
             await instances.updater.init()
-            const ffPath = JSON.parse((fs.readFileSync(path.join(__dirname,"../src/ffmpeg-downloader/ffpath.json"), { encoding: "utf8" }).toString()))
+            const ffPath = JSON.parse((fs.readFileSync(path.join(__dirname, "../src/ffmpeg-downloader/ffpath.json"), { encoding: "utf8" }).toString()))
             const e = fs.existsSync(ffPath.ffPath)
             expect(e).toBe(true)
         })
@@ -25,6 +25,8 @@ describe("Converter class", () => {
             const e = fs.existsSync(`./test_files/mp3/${mp3File}`)
             expect(e).toBe(true)
         })
+    })
+    describe("Convert a files", () => {
         test('Convert a file to .avi', async () => {
             await instances.converter.convert(filename, "./test_files", "avi")
             const file = filename.split(".")
