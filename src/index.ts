@@ -10,7 +10,7 @@ export default class Youcon {
     private _updater: FfmpegDownloader
 
     constructor() {
-        const { args, downloader,updater } = new Instances()
+        const { args, downloader, updater } = new Instances()
         this._args = args
         this._downloader = downloader
         this._updater = updater
@@ -25,9 +25,9 @@ export default class Youcon {
      * @param  {string} format - optional
      *  - format to convert into - default: "mp3"
      */
-    async init(urls?: Array<string>, dir?: string, convert?: boolean, format?: string) {
-        this._args.setArgs(urls, dir, convert, format)
-        if(this._args.update){
+    async init(urls?: Array<string>, dir?: string, convert?: boolean, format?: string, update?: boolean) {
+        this._args.setArgs(urls, dir, convert, format, update)
+        if (this._args.update) {
             await this._updater.init()
         }
         if (!Array.isArray(this._args.urls)) {

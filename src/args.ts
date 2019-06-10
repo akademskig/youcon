@@ -5,7 +5,7 @@ export default class Args {
     private _dir!: string
     private _convert!: boolean
     private _format!: string
-    private _update!:boolean
+    private _update!: boolean
 
     constructor() {
         this.parseCliArgs()
@@ -48,10 +48,10 @@ export default class Args {
         this._dir = args.dir
         this._convert = args.convert
         this._format = args.format
-        this._update= args["update-ffmpeg"]
+        this._update = args["update-ffmpeg"]
     }
 
-    setArgs(urls?: Array<string>, dir?: string, convert?: boolean, format?: string) {
+    setArgs(urls?: Array<string>, dir?: string, convert?: boolean, format?: string, update?: boolean) {
         if (urls)
             this._urls = urls
         if (dir)
@@ -60,6 +60,8 @@ export default class Args {
             this._convert = convert
         if (format)
             this._format = format
+        if (update)
+            this._update = update
         if (!this._urls || this._urls.length === 0)
             throw new Error("Url argument is required!")
     }
@@ -80,7 +82,7 @@ export default class Args {
         return this._format
     }
 
-    get update(){
+    get update() {
         return this._update
     }
 }
