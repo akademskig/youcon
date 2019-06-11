@@ -28,12 +28,12 @@ export default class FfmpegDownloader {
 
     async checkUpdate(version?: string): Promise<boolean> {
         return new Promise((resolve, reject) => {
-            request.get(LATEST, { json: true }, (err: any, _:Response, body: any) => {
+            request.get(LATEST, { json: true }, (err: any, _: Response, body: any) => {
                 if (err) {
                     reject(err)
                     return
                 }
-                if (body.version === version){
+                if (body.version === version) {
                     resolve(false)
                 }
                 this.version = body.version
