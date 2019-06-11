@@ -53,7 +53,7 @@ export default class Utils {
     getPlatform(): string | null {
         switch (os.platform()) {
             case ("win32"): {
-                return "win"
+                return "windows-64"
             }
             case ("linux"): {
                 if (os.arch() === "x64")
