@@ -1,4 +1,3 @@
-const VERSIONS = `http://ffbinaries.com/api/v1/versions`
 const LATEST = `http://ffbinaries.com/api/v1/version/latest`
 // const VERSION = ` http://ffbinaries.com/api/v1/version/:version`
 import request, { Response } from "request"
@@ -18,29 +17,24 @@ export default class FfmpegDownloader {
         this.utils = utils
     }
 
-    async init() {
-        await this.downloadLatestList()
+    async init(version?: string) {
+        const update = await this.checkUpdate(version)
+        if (!update) {
+            console.log(`Ffmpeg already on the latest version: ${version}`)
+            return
+        }
         await this.downloadVersion()
     }
 
-    listVersions() {
+    async checkUpdate(version?: string): Promise<boolean> {
         return new Promise((resolve, reject) => {
-            request.get(VERSIONS, { json: true }, (err: any, res: Response) => {
+            request.get(LATEST, { json: true }, (err: any, _:Response, body: any) => {
                 if (err) {
                     reject(err)
                     return
                 }
-                resolve(res)
-            })
-        })
-    }
-
-    async downloadLatestList(): Promise<Response> {
-        return new Promise((resolve, reject) => {
-            request.get(LATEST, { json: true }, (err: any, res: Response, body: any) => {
-                if (err) {
-                    reject(err)
-                    return
+                if (body.version === version){
+                    resolve(false)
                 }
                 this.version = body.version
                 const platform = this.utils.getPlatform()
@@ -49,7 +43,7 @@ export default class FfmpegDownloader {
                 }
                 this.url = body.bin[platform].ffmpeg
                 this.platform = platform
-                resolve(res)
+                resolve(true)
             })
 
         })

@@ -29,7 +29,7 @@ export default class Youcon {
     async init(urls?: Array<string>, dir?: string, convert?: boolean, format?: string, update?: boolean) {
         this._args.setArgs(urls, dir, convert, format, update)
         if (this._args.update || ffPath.ffPath.length === 0) {
-            await this._updater.init()
+            await this._updater.init(ffPath.ffVersion ? ffPath.ffVersion : undefined)
         }
         if (!Array.isArray(this._args.urls)) {
             throw new Error("The first argument must be an array!")
