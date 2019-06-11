@@ -18,11 +18,11 @@ export default class Converter {
         const fileArr = file.split(".")
         let ext = fileArr.pop() || "mp4"
         const ffPath = JSON.parse(fs.readFileSync(path.join(__dirname, "./ffmpeg-downloader/ffpath.json")).toString()).ffPath
+
         const filename = fileArr.join(".")
         console.log(`\nConverting ${file} to ${filename}.${format}`)
         await this._utils.checkDir(`${dir}/${format}`)
-        let cmd = this._utils.getPlatform() === "win" ? `${ffPath} /y /i ${dir}/"${filename.concat(".", ext)}" ${dir}/"${format}/${filename}.${format}"` :
-            `${ffPath} -y -i ${dir}/"${filename.concat(".", ext)}" ${dir}/"${format}/${filename}.${format}"`
+        let cmd = `${ffPath} -y -i ${dir}/"${filename.concat(".", ext)}" ${dir}/"${format}/${filename}.${format}"`
         return new Promise((resolve) => {
             let duration = 0
             const converter = exec(cmd,
@@ -58,7 +58,7 @@ export default class Converter {
                     const time = this._utils.getDuration(timeData)
                     if (duration === NaN || time === NaN)
                         return
-                    const percentage = ((time / duration) * 100).toFixed(2)
+                    const percentage = ((time / duration) * 100) <= 100 ? ((time / duration) * 100).toFixed(2) : "100.00"
                     if (processE.stdout.cursorTo && processE.stdout.clearLine) {
                         processE.stdout.cursorTo(0);
                         processE.stdout.clearLine(1);
