@@ -56,6 +56,8 @@ export default class Converter {
                         return
                     const timeData = data.substring(timeIndex, timeIndex + 13).split("=")[1].trim()
                     const time = this._utils.getDuration(timeData)
+                    if (duration === NaN || time === NaN)
+                        return
                     const percentage = ((time / duration) * 100).toFixed(2)
                     if (processE.stdout.cursorTo && processE.stdout.clearLine) {
                         processE.stdout.cursorTo(0);

@@ -13,7 +13,7 @@ export default class Utils {
         let dataArr = data.split(":")
         let duration = 0
         if (dataArr.length !== 3)
-            throw new Error("Invalid time format")
+            return NaN
         dataArr.forEach((d: string, i: number) => {
             switch (i) {
                 case (0): duration += parseInt(d) * 3600 * 1000
